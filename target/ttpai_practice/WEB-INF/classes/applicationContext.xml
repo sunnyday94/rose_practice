@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-2.5.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd "
+       default-lazy-init="true">
+
+    <!-- 自动扫描 -->
+    <context:annotation-config/>
+    <context:component-scan base-package="com.ttpai.practice"/>
+
+    <!-- 加载配置文件 -->
+    <context:property-placeholder location="classpath*:*.properties"/>
+
+    <!-- 数据源配置 druid -->
+    <bean id="jade.dataSource.com.ttpai.practice.dao" class="com.alibaba.druid.pool.DruidDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <!-- 运行判断连接超时任务的时间间隔，单位为毫秒，默认为-1，即不执行任务。 -->
+        <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+        <!-- 连接的超时时间，默认为半小时。 -->
+        <property name="minEvictableIdleTimeMillis" value="3600000"/>
+    </bean>
+
+    <!-- 配置事务管理器 -->
+    <bean id="practiceTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 注入数据库连接池 -->
+        <property name="dataSource" ref="jade.dataSource.com.ttpai.practice.dao"/>
+    </bean>
+
+    <!-- 配置基于注解的声明式事务 -->
+    <tx:annotation-driven transaction-manager="practiceTransactionManager" proxy-target-class="true"/>
+
+    <!-- 通知 -->
+    <tx:advice id="practiceadvice" transaction-manager="practiceTransactionManager">
+        <tx:attributes>
+            <tx:method name="save*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="insert*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="add*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="update*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="modify*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="del*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="remove*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="select*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="query*" propagation="SUPPORTS" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+
+
+    <bean id ="taskExecutor"  class ="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" >
+        <property name ="corePoolSize" value ="5" />
+        <property name ="keepAliveSeconds" value ="300" />
+        <property name ="maxPoolSize" value ="10" />
+        <property name ="queueCapacity" value ="25" />
+    </bean>
+
+</beans>
