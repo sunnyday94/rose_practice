@@ -2,6 +2,7 @@ package com.sunny.rose.practice.utils;
 
 import com.alibaba.fastjson.JSONObject;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -213,7 +214,7 @@ public class HttpClientUtil {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPut httpPut = new HttpPut(url);
         httpPut.setConfig(REQUEST_CONFIG);
-        if (headers != null && headers.size()>0) {
+        if (MapUtils.isNotEmpty(headers)) {
             for (Entry<String,String> header : headers.entrySet()) {
                 httpPut.setHeader(header.getKey(), header.getValue());
             }
