@@ -318,7 +318,7 @@ public class HttpClientUtil {
             if (StringUtils.isNotBlank(param)) {
                 StringEntity entity = new StringEntity(param, CHARSET);
                 entity.setContentEncoding(CHARSET);
-                entity.setContentType("application/json");
+                entity.setContentType(ContentType.APPLICATION_JSON.getCharset().toString());
                 httpPut.setEntity(entity);
             }
             CloseableHttpResponse result = httpClient.execute(httpPut);
